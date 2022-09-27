@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,12 +56,16 @@ namespace Labb2
                 }
             }
         }
+
         public void ShoppingMenu()
         {
             bool quit = false;
 
+            
+
             while (!quit)
             {
+                Console.Clear();
                 Console.WriteLine("1. Buy Product:");
                 Console.WriteLine("2. Remove Product:");
                 Console.WriteLine("3. List shopping car");
@@ -74,9 +79,11 @@ namespace Labb2
                     case 1:
                         //lista alla produkter
                         //användaren väljer med siffror vad som ska läggas till
-                        Console.WriteLine("Add Products to shopping cart");
-                        Customers[_logedinCustomer].AddProductToCart(StoreProducts[0]);
+                        Console.WriteLine("What product to buy? Enter number to chose");
+                        ListStoreProducts();
+                        Customers[_logedinCustomer].AddProductToCart(StoreProducts[Input.PublicInput(StoreProducts.Count)]);
                         break;
+
                     case 2:
                         //lista alla produkter
                         //användaren väljer med siffror vad som ska tas bort
@@ -90,15 +97,19 @@ namespace Labb2
                         break;
                     case 5:
                         Console.WriteLine("log out");
+                        LogOut();
+                        quit = true;
                         break;
                 }
             }
         }
+
         public void NewCustomer()
         {
             bool loopCheck = false;
             string tempName = string.Empty;
 
+            Console.Clear();
             Console.WriteLine("Enter Username:");
 
             do
@@ -133,6 +144,14 @@ namespace Labb2
 
         }
 
+        public void ListStoreProducts()
+        {
+            for (int i = 0; i < StoreProducts.Count; i++)
+            {
+                Console.WriteLine("{0} {1}", i+1, StoreProducts[i].ToString());
+            }
+        }
+
         //Byter aktiv användare i listan
         public void LogIn()
         {
@@ -145,14 +164,15 @@ namespace Labb2
             do
             {
                 tempName = Console.ReadLine(); //Borde ta bort alla mellanslag på slutet om de existerar, eller annan formatering.
-
                 //Checka först om användaren redan finns i filläsaren
                 for (int i = 0; i < Customers.Count; i++)
                 {
+                    
+                    
                     //Borde väl gå att använda någon contain funktion istället?
                     if (Customers[i].Name.ToLower() == tempName.ToLower())
                     {
-                        Console.WriteLine("Enter password: ");
+                        Console.WriteLine("Enter password: \t or ESC to quit.");
                         passwordCheck = Customers[i].CheckPassword(Console.ReadLine()); //Borde göra en check på lösenordet innan det skrivs in. Om det är för långt eller liknand
 
                         if (passwordCheck)
@@ -160,14 +180,28 @@ namespace Labb2
                             _logedinCustomer = i;
                             loopCheck = true;
                         }
+                        /*else if (Console.ReadKey().Key == ConsoleKey.Escape)
+                        {
+                            loopCheck = true;
+                            break;
+                        }*/
                         else
                         {
-                            Console.WriteLine("Wrong password");
+                            
+                            Console.Clear();
+                            Console.WriteLine("Wrong password. Enter again:");
                             //Kan lägga till en räknare om användaren skriver in fellösenord för många ggr.
+                            //Även att trycka en knapp för att breaka
+                            
                         }
-
-                        break;
+                        
                     }
+                }
+
+                if (!loopCheck)
+                {
+                    Console.WriteLine("No user found with that name:");
+                    break;
                 }
 
             } while (!loopCheck);
@@ -182,6 +216,9 @@ namespace Labb2
         public void LogOut()
         {
             //Kommer till huvudmenyn
+
+            //Customers.RemoveAt(_logedinCustomer); //tar bort användaren ut listan? 
+
             _logedinCustomer = -1;
             LogInMenu();
         }
