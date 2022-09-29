@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Labb2
 {
@@ -10,18 +10,16 @@ namespace Labb2
     {
         private readonly string _name;
         private readonly string _password;
-        private string _currency = "SEK"; //Kanske göra den till en enum?
-
-        //Uppdatera denna med rätt access nivå med Property. Ska vara 
+ 
         private List<Product> _shoppingCart = new List<Product>();
         
-        public Customer(string name, string password)
+        public Customer(string name = "", string password = "")
         {
             _name = name;
             _password = password;
         }
 
-        public Customer () {} //För json implementeringen
+        //public Customer () {} //För json implementeringen
 
         public string Name
         {
@@ -31,7 +29,7 @@ namespace Labb2
         public List<Product> ShoppingCart
         {
             get { return _shoppingCart; }
-            private set { _shoppingCart = value; }
+            private set { _shoppingCart = value; } //Kan gå direkt om inget ändras.
         }
 
         public bool CheckPassword(string input)
@@ -45,47 +43,81 @@ namespace Labb2
 
             return passwordCheck;
         }
-
-        //Metod för att beräkna totalpris. Ärvs av varje användare. Ska bero på valutan. //denna kan vara en abstract
-        //Eller en virtuell metod också
-        public int TotalPrice()
+        
+        public virtual double TotalPrice()
         {
-            int sumTotal = 0;
+            double sumTotal = 0;
 
-            //Loop som går igenom hela listan med objekt
+            foreach (var prod in ShoppingCart)
+            {
+                sumTotal += prod.Price * prod.Quantity;
+            }
 
             return sumTotal;
         }
 
-        public void ListShoppingCart()
+        public virtual void ListShoppingCart()
         {
-            //skriv ut hela listan med produkter.
-            //Kan göra en TO-string från producterna
-
+            int count = 0;
+            
             foreach (var prod in _shoppingCart)
             {
-                Console.WriteLine(prod);   
+                count++;
+                Console.WriteLine($"{count}. {prod}");   
             }
+
+            Console.WriteLine($"Total price: {TotalPrice()} {Currency.CurrencyName}");
+            Console.ReadLine();
         }
 
-        public void AddProductToCart(Product productToAdd) //Vartifrån ska denna menyn nås? Från store.
+        public void AddProductToCart(Product productToAdd)
         {
-            //Måste kolla om detaljen redan finns. Isf lägga till en quantitet.
-            _shoppingCart.Add(productToAdd);
+            var newProd = new Product(productToAdd.Detail, productToAdd.Price, productToAdd.Description, productToAdd.Quantity);
+            bool addNewProd = true;
+
+            newProd.Quantity = 1; //annars blir det tio som från orginalet
+            
+            foreach (var prod in ShoppingCart)
+            {
+                if (prod.Detail == newProd.Detail)
+                {
+                    prod.Quantity++;
+                    addNewProd = false;
+                    break;
+                }
+            }
+
+            if (addNewProd)
+            {
+                ShoppingCart.Add(newProd);
+            }
         }
 
         public void RemoveProductFromCart()
         {
-            int productToRemove = 0;
-            //lista upp varukorgen och välj med siffertangent vad som ska tas bort.
-            ListShoppingCart();
-            _shoppingCart.RemoveAt(productToRemove - 1); 
+            if (ShoppingCart[0] != null)
+            {
+                ListShoppingCart();
+                int productToRemove = Input.PublicInput(ShoppingCart.Count);
+                ShoppingCart.RemoveAt(productToRemove - 1); //Detta funkar inte perfekt egentligen. Borde kanske hantera allt som objekt istället.
+            }
+            else
+            {
+                Console.WriteLine("No products to remove. Press any key to continue");
+                Console.ReadLine();
+            }
         }
 
-        //TO string metod vad ska den visa mer? Hur göra med valutan
+        public void CheckOut()
+        {
+            ShoppingCart.Clear();
+            Console.WriteLine("Your shopping cart is empty.Press any key to continue");
+            Console.ReadLine();
+        }
+
         public override string ToString()
         {
-            return string.Format("{0}. Total sum in shoppingcart: {1}. {2} ", Name, TotalPrice(), _currency);
+            return string.Format($"{Name}. Total sum in shoppingcart: {TotalPrice()} {Currency.CurrencyName}.");
         }
     }
 }

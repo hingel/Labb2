@@ -3,11 +3,11 @@
 public class Product
 {
     private string _detail;
-    private int _price;
+    private double _price;
     private string _description;
     private int _quantity;
 
-    public Product (string detail = "", int price = 0, string description = "", int quantity = 0)
+    public Product (string detail, double price, string description = "", int quantity = 10)
     {
         _detail = detail;
         _price = price;
@@ -15,7 +15,7 @@ public class Product
         _quantity = quantity;
     }
 
-    public Product () {} //Tom konstruktor för json implementeringen för skapande av objekt
+    //public Product () {} //Tom konstruktor för json implementeringen för skapande av objekt
 
     public string Detail
     {
@@ -23,9 +23,12 @@ public class Product
         set { _detail = value; }
     }
 
-    public int Price
+    public double Price
     {
-        get { return _price; }
+        get
+        {
+            return (_price / Currency.CurrencyDouble);
+        } 
         set { _price = value; }
     }
 
@@ -44,6 +47,6 @@ public class Product
     //Här nere borde priset kanske visas egentligen för varje grej. Men hur lösa det på ett bra sätt?
     public override string ToString()
     {
-        return string.Format("{0} Price: {1} \t Description: {2}", Detail, Price, Description );
+        return string.Format($"{Detail} \t Description: {Description}. {Price} {Currency.CurrencyName} Quantity: {Quantity}"); //Lägg till villkor här efter om det är Euro eller inte?
     }
 }

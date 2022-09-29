@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Labb2
 {
@@ -11,9 +10,10 @@ namespace Labb2
     {
         private List<Product> _storeProducts = new List<Product>();
         private List<Customer> _customers = new List<Customer>();
-        private int _logedinCustomer = -1;
+        private int _logedInCustomer = -1;
 
-        public enum Currency { Sek = 0, Eur = 1, Usd = 2 };
+        public enum Currency { Sek = 1, Eur = 2, Usd = 5 };
+
 
         public List<Product> StoreProducts
         {
@@ -30,14 +30,16 @@ namespace Labb2
         public void LogInMenu()
         {
             bool quit = false;
-            
+            Currency chosenCurrency = Currency.Eur;
+
             while (!quit)
             {
                 Console.WriteLine("1. Login:");
                 Console.WriteLine("2. New Customer:");
-                Console.WriteLine("3. Quit");
-                int menuChoise = Input.PublicInput(3);
-                //sen kalla på en meny funktion.
+                Console.WriteLine("3. Choose Currency:");
+                Console.WriteLine("4. Quit");
+
+                int menuChoise = Input.PublicInput(4);
 
                 switch (menuChoise)
                 {
@@ -50,22 +52,28 @@ namespace Labb2
                         NewCustomer();
                         break;
                     case 3:
+                        Labb2.Currency.ChooseCurrency();
+                        break;
+                    case 4:
                         Console.WriteLine("I quit menyn första menyn");
                         quit = true;
                         break;
                 }
-            }
+            } 
         }
 
         public void ShoppingMenu()
         {
             bool quit = false;
-
             
-
             while (!quit)
             {
                 Console.Clear();
+
+                Console.WriteLine($"Welcome {Customers[_logedInCustomer]}");
+
+                Console.WriteLine();
+
                 Console.WriteLine("1. Buy Product:");
                 Console.WriteLine("2. Remove Product:");
                 Console.WriteLine("3. List shopping car");
@@ -76,26 +84,24 @@ namespace Labb2
 
                 switch (choise)
                 {
-                    case 1:
-                        //lista alla produkter
-                        //användaren väljer med siffror vad som ska läggas till
+                    case 1: //Köpa produkt
                         Console.WriteLine("What product to buy? Enter number to chose");
                         ListStoreProducts();
-                        Customers[_logedinCustomer].AddProductToCart(StoreProducts[Input.PublicInput(StoreProducts.Count)]);
+                        int prodToAdd = Input.PublicInput(StoreProducts.Count);
+                        Customers[_logedInCustomer].AddProductToCart(StoreProducts[prodToAdd-1]);
+                        StoreProducts[prodToAdd - 1].Quantity -= 1;
                         break;
-
-                    case 2:
-                        //lista alla produkter
-                        //användaren väljer med siffror vad som ska tas bort
-                        Console.WriteLine("Remove product");
+                    case 2: //Ta bort produkt
+                        Customers[_logedInCustomer].RemoveProductFromCart();
+                        //Borde lägga tillbaka den i kassan igen.
                         break;
-                    case 3:
-                        Console.WriteLine("List shopping cart");
+                    case 3://Lista shopping cart
+                        Customers[_logedInCustomer].ListShoppingCart();
                         break;
-                    case 4:
-                        Console.WriteLine("Check out");
+                    case 4: //checka ut och betala
+                        Customers[_logedInCustomer].CheckOut();
                         break;
-                    case 5:
+                    case 5: //Logout
                         Console.WriteLine("log out");
                         LogOut();
                         quit = true;
@@ -110,11 +116,18 @@ namespace Labb2
             string tempName = string.Empty;
 
             Console.Clear();
-            Console.WriteLine("Enter Username:");
-
+            
             do
             {
+                loopCheck = false;
+                Console.WriteLine("Enter Username:");
                 tempName = Console.ReadLine(); //Borde ta bort alla mellanslag på slutet om de existerar, eller annan formatering.
+
+                if (tempName == "")
+                {
+                    Console.WriteLine("Name cannot be blank");
+                    loopCheck = true;
+                }
 
                 //Checka först om användaren redan finns i filläsaren
                 foreach (var cust in Customers)
@@ -127,18 +140,17 @@ namespace Labb2
                         break;
                     }
                 }
-                
             } while (loopCheck);
 
             
             Console.WriteLine("Enter a 3 letter/number password:");
             string tempPassword = Console.ReadLine();
 
-            var customer1 = new StandardCustomer(name: tempName, password: tempPassword);
+            var customer1 = new Customer(name: tempName, password: tempPassword);
 
             Customers.Add(customer1);
 
-            _logedinCustomer = Customers.Count - 1;
+            _logedInCustomer = Customers.Count - 1;
 
             ShoppingMenu();
 
@@ -169,7 +181,7 @@ namespace Labb2
                 {
                     
                     
-                    //Borde väl gå att använda någon contain funktion istället?
+                    //Borde väl gå att använda någon contain funktion istället? //Kör med Linq istället.
                     if (Customers[i].Name.ToLower() == tempName.ToLower())
                     {
                         Console.WriteLine("Enter password: \t or ESC to quit.");
@@ -177,7 +189,7 @@ namespace Labb2
 
                         if (passwordCheck)
                         {
-                            _logedinCustomer = i;
+                            _logedInCustomer = i;
                             loopCheck = true;
                         }
                         /*else if (Console.ReadKey().Key == ConsoleKey.Escape)
@@ -208,19 +220,14 @@ namespace Labb2
 
             if (passwordCheck)
             {
-                Console.WriteLine($"Current customer {_logedinCustomer}");
+                Console.WriteLine($"Current customer {_logedInCustomer}");
                 ShoppingMenu();
             }
         }
 
         public void LogOut()
         {
-            //Kommer till huvudmenyn
-
-            //Customers.RemoveAt(_logedinCustomer); //tar bort användaren ut listan? 
-
-            _logedinCustomer = -1;
-            LogInMenu();
+            _logedInCustomer = -1; 
         }
 
     }
