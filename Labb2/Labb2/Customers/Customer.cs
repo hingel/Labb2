@@ -63,11 +63,10 @@ namespace Labb2
             foreach (var prod in _shoppingCart)
             {
                 count++;
-                Console.WriteLine($"{count}. {prod}");   
+                Console.WriteLine($"{count}. {prod}" + $"Total sum: {prod.Quantity*prod.Price}");   
             }
 
             Console.WriteLine($"Total price: {TotalPrice()} {Currency.CurrencyName}");
-            Console.ReadLine();
         }
 
         public void AddProductToCart(Product productToAdd)
@@ -93,18 +92,29 @@ namespace Labb2
             }
         }
 
-        public void RemoveProductFromCart()
+        public Product RemoveProductFromCart()
         {
-            if (ShoppingCart[0] != null)
+            if (ShoppingCart.Count > 0)
             {
                 ListShoppingCart();
                 int productToRemove = Input.PublicInput(ShoppingCart.Count);
-                ShoppingCart.RemoveAt(productToRemove - 1); //Detta funkar inte perfekt egentligen. Borde kanske hantera allt som objekt istället.
+                if (ShoppingCart[productToRemove - 1].Quantity > 1)
+                {
+                    ShoppingCart[productToRemove - 1].Quantity --;
+                    return ShoppingCart[productToRemove - 1];
+                }
+                else
+                {
+                    Product tempProd = ShoppingCart[productToRemove - 1];
+                    ShoppingCart.RemoveAt(productToRemove - 1);
+                    return tempProd;
+                }
             }
             else
             {
                 Console.WriteLine("No products to remove. Press any key to continue");
                 Console.ReadLine();
+                return null;
             }
         }
 
@@ -115,9 +125,14 @@ namespace Labb2
             Console.ReadLine();
         }
 
+        public string GenerateFileString()
+        {
+            return $"{Name} {_password}";
+        }
+
         public override string ToString()
         {
-            return string.Format($"{Name}. Total sum in shoppingcart: {TotalPrice()} {Currency.CurrencyName}.");
+            return $"{Name}. Total sum in Shopping Cart: {TotalPrice()} {Currency.CurrencyName}.";
         }
     }
 }

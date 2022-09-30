@@ -2,16 +2,13 @@
 
 public class SilverCustomer : Customer
 {
-    private string _customerLevel;
     private int _discount = 10;
 
     public SilverCustomer(string name, string password) : base(name, password)
     { 
     }
 
-    public SilverCustomer()
-    {
-    }
+    //public SilverCustomer(){}
 
     public int Discount
     {
@@ -25,7 +22,7 @@ public class SilverCustomer : Customer
         foreach (var prod in ShoppingCart)
         {
             count++;
-            Console.WriteLine($"{count}. {prod}. With Your discount!!: {prod.Price * (100 - Discount) / 100} {Currency.CurrencyName}");
+            Console.WriteLine($"{count}. {prod} \nTotal sum with your Discount: {prod.Quantity * prod.Price * (100 - Discount) / 100} {Currency.CurrencyName}");
         }
 
         Console.WriteLine($"Total price: {TotalPrice()}");

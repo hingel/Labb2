@@ -47,6 +47,6 @@ public class Product
     //Här nere borde priset kanske visas egentligen för varje grej. Men hur lösa det på ett bra sätt?
     public override string ToString()
     {
-        return string.Format($"{Detail} \t Description: {Description}. {Price} {Currency.CurrencyName} Quantity: {Quantity}"); //Lägg till villkor här efter om det är Euro eller inte?
+        return $"Detail: {Detail}. Description: {Description} Quantity: {Quantity} Price: {Price}";
     }
 }

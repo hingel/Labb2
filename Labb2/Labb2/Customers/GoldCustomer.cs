@@ -2,15 +2,14 @@
 
 public class GoldCustomer : Customer
 {
-    private string _customerLevel;
-    private int _discount = 20;
+    private int _discount = 15;
 
     public GoldCustomer(string name, string password) : base(name, password)
     {
 
     }
 
-    public GoldCustomer() {}
+    //public GoldCustomer() {}
     
     public int Discount
     {
@@ -24,7 +23,7 @@ public class GoldCustomer : Customer
         foreach (var prod in ShoppingCart)
         {
             count++;
-            Console.WriteLine($"{count}. {prod}. With Your discount!!: {prod.Price * (100 - Discount) / 100} {Currency.CurrencyName}");
+            Console.WriteLine($"{count}. {prod}. \nTotal sum with your Discount: {prod.Quantity * prod.Price * (100 - Discount) / 100} {Currency.CurrencyName}");
         }
 
         Console.WriteLine($"Total price: {TotalPrice()}");
@@ -41,9 +40,8 @@ public class GoldCustomer : Customer
 
         return sumTotal;
     }
-
     public override string ToString()
     {
-        return base.ToString() + string.Format(TotalPrice()>0 ? $" With your Discount {Discount}" : "");
+        return base.ToString() + string.Format(TotalPrice()>0 ? $" With your {Discount}% discount!" : "");
     }
 }
