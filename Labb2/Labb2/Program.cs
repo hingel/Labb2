@@ -1,9 +1,8 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Labb2;
-
-//Borde inte skapa en helt ny affär för varje kund. Mängden data borde vara mindre per användare.
-
+using Labb2.Customers;
 
 var store = new Store();
 
@@ -25,8 +24,10 @@ var customerList = Input.ReadListFromFile("customers.txt");
 foreach (var c in customerList)
 {
     var splitString = c.Split(' ');
-    string tempName = splitString.Skip(1).Take(splitString.Length - 2).Aggregate((str, strSum) => $"{str} {strSum}");
-    string tempPassW = splitString.Last();
+    //string tempName = splitString.Skip(1).Take(splitString.Length - 2).Aggregate((str, strSum) => $"{str} {strSum}"); //om det inte är tillåtet att ha mellanslag i lösenordet
+    //string tempPassW = splitString.Last(); //om det inte är tillåtet att ha mellanslag i lösenordet
+    string tempName = splitString.Skip(1).TakeWhile(str => !str.Contains("Password")).Aggregate((str, strSum) => $"{str} {strSum}");
+    string tempPassW = splitString.SkipWhile(str => !str.Contains("Password")).Take(splitString.Length).Aggregate((str, strSum) => $"{str}{strSum}").Substring(8);
 
     if (splitString.Contains("gold"))
     {
@@ -40,6 +41,10 @@ foreach (var c in customerList)
     {
         store.Customers.Add(new BronzeCustomer(tempName, tempPassW));
     }
+    else if (splitString.Contains("admin"))
+    {
+        store.Customers.Add(new AdminUser(tempName, tempPassW));
+    }
     else
     {
         store.Customers.Add(new Customer(tempName, tempPassW));
@@ -49,12 +54,12 @@ foreach (var c in customerList)
 //kör inloggningsmenyn
 store.LogInMenu();
 
-//skriva till fil efter utlogg
+//Skriva till fil efter utlogg och programmet avslutas
 var addedCustomers = new List<string>();
 
 foreach (var cust in store.Customers)
 {
-    bool add = customerList.Contains(cust.Name);
+    bool add = customerList.Contains(cust.Name); //Varför detta? Om det finns ett namn?
     
     //om inte finns ska då lägga till i listan
     if (!add)
@@ -70,6 +75,10 @@ foreach (var cust in store.Customers)
         else if (cust is BronzeCustomer)
         {
             addedCustomers.Add($"bronze {cust.GenerateFileString()}");
+        }
+        else if (cust is AdminUser)
+        {
+            addedCustomers.Add($"admin {cust.GenerateFileString()}");
         }
         else
         {

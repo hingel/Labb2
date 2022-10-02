@@ -1,5 +1,10 @@
-standard Knatte 123
-gold Fnatte 321
-silver Tjatte 213
-bronze Henrik Ingelsten kirneH
-standard chris hejpådig
+standard Knatte Password123
+gold Fnatte Password321
+silver Tjatte Password213
+bronze Henrik Ingelsten PasswordkirneH
+silver chris Passwordhejpådig
+standard love PasswordLiv
+gold Alfons PasswordÅberg
+standard sveb Passwordsveb
+standard Stefan Passwordgoodbye
+admin admin Password_admin

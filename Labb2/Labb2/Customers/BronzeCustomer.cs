@@ -25,7 +25,6 @@ public class BronzeCustomer : Customer
         }
 
         Console.WriteLine($"Total price: {TotalPrice()}");
-        Console.ReadLine();
     }
 
     public override double TotalPrice()

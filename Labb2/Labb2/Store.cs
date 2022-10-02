@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
+using System.Threading.Channels;
+using Labb2.Customers;
 
 namespace Labb2
 {
@@ -10,7 +12,7 @@ namespace Labb2
     {
         private List<Product> _storeProducts = new List<Product>();
         private List<Customer> _customers = new List<Customer>();
-        private int _logedInCustomer = -1;
+        private Customer? _logedInCustomer = null;
         
         public List<Product> StoreProducts
         {
@@ -63,17 +65,26 @@ namespace Labb2
             {
                 Console.Clear();
 
-                Console.WriteLine($"Welcome {Customers[_logedInCustomer]}");
+                Console.WriteLine($"Welcome {_logedInCustomer}");
 
                 Console.WriteLine();
 
                 Console.WriteLine("1. Buy Product:");
-                Console.WriteLine("2. Remove Product:");
-                Console.WriteLine("3. List shopping car");
+                Console.WriteLine("2. Remove Product from Shopping Cart:");
+                Console.WriteLine("3. List Shopping Cart");
                 Console.WriteLine("4. Check out");
                 Console.WriteLine("5. Log Out");
 
-                int choise = Input.PublicInput(5);
+                int noOfChoices = 5;
+                
+                //Här ha villkor om admin user:
+                if (_logedInCustomer is AdminUser)
+                {
+                    Console.WriteLine("6. Admin Menu.");
+                    noOfChoices = 6;
+                }
+
+                int choise = Input.PublicInput(noOfChoices);
 
                 switch (choise)
                 {
@@ -82,13 +93,22 @@ namespace Labb2
                         Console.WriteLine("What product to buy? Enter number to chose");
                         ListStoreProducts();
                         int prodToAdd = Input.PublicInput(StoreProducts.Count);
-                        Customers[_logedInCustomer].AddProductToCart(StoreProducts[prodToAdd-1]);
-                        StoreProducts[prodToAdd - 1].Quantity -= 1;
+                        //Om antalet är mindre än ett i butiken
+                        if (StoreProducts[prodToAdd - 1].Quantity < 1)
+                        {
+                            Console.WriteLine($"{StoreProducts[prodToAdd - 1].Detail} is not available. Press any key to continue.");
+                            Console.ReadKey();
+                        }
+                        else
+                        {
+                            _logedInCustomer.AddProductToCart(StoreProducts[prodToAdd - 1]);
+                            StoreProducts[prodToAdd - 1].Quantity -= 1;
+                        }
                         break;
                     case 2: //Ta bort produkt
                         Console.Clear();
                         Console.WriteLine("What product to remove?");
-                        Product tempProd = Customers[_logedInCustomer].RemoveProductFromCart();
+                        Product tempProd = _logedInCustomer.RemoveProductFromCart();
 
                         //Lägger tillbaks produkten i kassan
                         if (tempProd != null)
@@ -99,76 +119,70 @@ namespace Labb2
                     case 3://Lista shopping cart
                         Console.Clear();
                         Console.WriteLine("Shopping Cart");
-                        Customers[_logedInCustomer].ListShoppingCart();
+                        _logedInCustomer.ListShoppingCart();
                         Console.ReadLine();
                         break;
                     case 4: //checka ut och betala
                         Console.Clear();
                         Console.WriteLine("Shopping Cart");
-                        Customers[_logedInCustomer].CheckOut();
+                        _logedInCustomer.CheckOut();
                         Console.ReadLine();
                         break;
                     case 5: //Logout
                         Console.WriteLine("log out");
                         LogOut();
                         quit = true;
-                        Console.ReadLine();
+                        break;
+                    case 6:
+                        if (_logedInCustomer is AdminUser admin)
+                        {
+                            StoreProducts.Add(admin.AddNewProductToCart());
+                        }
                         break;
                 }
             }
         }
-
+        
         public void NewCustomer()
         {
-            bool loopCheck = false;
+            bool loopCheck = true;
             string tempName = string.Empty;
-
+            string tempPassword = string.Empty;
             Console.Clear();
-            
+
             do
             {
-                loopCheck = false;
                 Console.WriteLine("Enter Username:");
+                loopCheck = false;
                 tempName = Console.ReadLine();
 
-                if (tempName == "")
+                Console.WriteLine("Enter a password:");
+                tempPassword = Console.ReadLine();
+
+                if (tempName == "" || tempPassword == "")
                 {
-                    Console.WriteLine("Name cannot be blank");
+                    Console.WriteLine("Input cannot be blank.");
                     loopCheck = true;
                 }
 
-                //Checka först om användaren redan finns i filläsaren
-                foreach (var cust in Customers)
+                if (Customers.Count(c => c.Name.ToLower() == tempName.ToLower()) > 0) //Inte det snyggaste borde kunna få en bool direkt
                 {
-                    //Borde väl gå att använda någon contain funktion istället?
-                    if (cust.Name.ToLower() == tempName.ToLower())
-                    {
-                        Console.WriteLine($"{tempName} is not available. Enter another Username:");
-                        loopCheck = true;
-                        break;
-                    }
+                    Console.WriteLine($"{tempName} is not available. Enter a new Username:");
+                    loopCheck = true;
                 }
             } while (loopCheck);
 
-            
-            Console.WriteLine("Enter a password:");
-            string tempPassword = Console.ReadLine();
-
             var customer1 = new Customer(name: tempName, password: tempPassword);
-
             Customers.Add(customer1);
-
-            _logedInCustomer = Customers.Count - 1;
-
+            _logedInCustomer = customer1;
             ShoppingMenu();
-
         }
 
         public void ListStoreProducts()
         {
             for (int i = 0; i < StoreProducts.Count; i++)
             {
-                Console.WriteLine($"{i+1} {StoreProducts[i].ToString()} {Currency.CurrencyName}");
+                Console.WriteLine($"{i+1}. {StoreProducts[i].ToString()} {Currency.CurrencyName}");
             }
         }
 
@@ -183,35 +197,37 @@ namespace Labb2
             
             while (!loopBreak)
             {
-
-                Console.WriteLine("Enter Username:");
+                Console.WriteLine("Enter Username or press Enter to quit.:");
                 tempName = Console.ReadLine();
                 Console.WriteLine("Enter password or press Enter to quit.");
                 testPassword = Console.ReadLine();
 
-                if (testPassword == "")
+                if (testPassword == "" || tempName == "")
                 {
                     break;
                 }
-                //Checka först om användaren redan finns i filläsaren //Borde väl gå att använda någon contain funktion istället? //Kör med Linq istället.
-                for (int i = 0; i < Customers.Count; i++)
+               
+                Customer tempCust = Customers.FirstOrDefault(cust => cust.Name.ToLower() == tempName.ToLower());
+
+                if (tempCust != null)
                 {
-                    if (Customers[i].Name.ToLower() == tempName.ToLower())
+                    customerFound = true;
+                    passwordCheck = tempCust.CheckPassword(testPassword);
+
+                    if (passwordCheck)
                     {
-                        customerFound = true;
-                        passwordCheck = Customers[i].CheckPassword(testPassword); //Borde göra en check på lösenordet innan det skrivs in. Om det är för långt eller liknand
-                        
-                        if (passwordCheck)
-                        {
-                            _logedInCustomer = i;
-                            loopBreak = true;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Wrong password. Enter again:");
-                            //Kan lägga till en räknare om användaren skriver in fellösenord för många ggr.
-                        }
+                        _logedInCustomer = tempCust;
+                        loopBreak = true;
                     }
+                    else
+                    {
+                        Console.WriteLine("Wrong password.");
+                        //Kan lägga till en räknare om användaren skriver in fellösenord för många ggr.
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Customer not found.");
                 }
 
                 if (!customerFound)
@@ -224,9 +240,7 @@ namespace Labb2
                         break;
                     }
                     else
-                    {
                         break;
-                    }
                 } 
             }
 
@@ -239,9 +253,7 @@ namespace Labb2
 
         public void LogOut()
         {
-            //här en metod för att skicka användaren till textfilen.
-            
-            _logedInCustomer = -1;  
+            _logedInCustomer = null;  
         }
 
     }

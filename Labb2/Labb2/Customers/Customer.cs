@@ -124,10 +124,10 @@ namespace Labb2
             Console.WriteLine("Your shopping cart is empty.Press any key to continue");
             Console.ReadLine();
         }
-
+        
         public string GenerateFileString()
         {
-            return $"{Name} {_password}";
+            return $"{Name} Password{_password}";
         }
 
         public override string ToString()
