@@ -18,7 +18,7 @@ public class BronzeCustomer : Customer
         foreach (var prod in ShoppingCart)
         {
             count++;
-            Console.WriteLine($"{count}. {prod}. \n\t Total sum with your Discount: {(prod.Quantity * prod.Price* (100 - Discount) / 100) / Currency.CurrencyDouble} {Currency.CurrencyName}");
+            Console.WriteLine($"{count}. {prod}. \n\t Total sum with your {Discount}% Discount: {(prod.Quantity * prod.Price* (100 - Discount) / 100) / Currency.CurrencyDouble} {Currency.CurrencyName}");
         }
 
         Console.WriteLine($"Total price: {TotalPrice()}");
