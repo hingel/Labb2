@@ -23,7 +23,7 @@ public static class Currency
                 CurrencyName = "EUR";
                 break;
             case 3:
-                CurrencyDouble = 10;
+                CurrencyDouble = 11;
                 CurrencyName = "USD";
                 break;
             default:

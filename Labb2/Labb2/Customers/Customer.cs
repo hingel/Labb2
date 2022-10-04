@@ -6,20 +6,18 @@ using System.Text;
 
 namespace Labb2
 {
-    public class Customer //Skulle kunna vara abstract
+    public class Customer
     {
         private readonly string _name;
         private readonly string _password;
- 
-        private List<Product> _shoppingCart = new List<Product>();
+
+        private List<Product> _shoppingCart = new();
         
         public Customer(string name = "hej", string password = "111")
         {
             _name = name;
             _password = password;
         }
-
-        //public Customer () {} //För json implementeringen
 
         public string Name
         {
@@ -63,7 +61,7 @@ namespace Labb2
             foreach (var prod in _shoppingCart)
             {
                 count++;
-                Console.WriteLine($"{count}. {prod} " + $"Total sum: {prod.Quantity*prod.Price}");   
+                Console.WriteLine($"{count}. {prod} " + $"Total sum: {prod.Quantity*prod.Price / Currency.CurrencyDouble}");   
             }
 
             Console.WriteLine($"Total price: {TotalPrice()} {Currency.CurrencyName}");
@@ -75,7 +73,7 @@ namespace Labb2
             var newProd = new Product(productToAdd.Detail, productToAdd.Price, productToAdd.Description, productToAdd.Quantity);
             bool addNewProd = true;
 
-            newProd.Quantity = 1; //annars blir det tio som från orginalet
+            newProd.Quantity = 1; //annars blir det samma antal som från orginalet
             
             foreach (var prod in ShoppingCart)
             {

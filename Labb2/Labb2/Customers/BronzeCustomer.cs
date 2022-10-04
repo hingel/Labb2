@@ -4,10 +4,7 @@ public class BronzeCustomer : Customer
 {
     private int _discount = 5;
 
-    public BronzeCustomer(string name, string password) : base(name, password)
-    {
-    }
-    //public BronzeCustomer() {}
+    public BronzeCustomer(string name, string password) : base(name, password) { }
 
     public int Discount
     {
@@ -21,10 +18,11 @@ public class BronzeCustomer : Customer
         foreach (var prod in ShoppingCart)
         {
             count++;
-            Console.WriteLine($"{count}. {prod}. \n\t Total sum with your Discount: {prod.Quantity * prod.Price* (100 - Discount) / 100} {Currency.CurrencyName}");
+            Console.WriteLine($"{count}. {prod}. \n\t Total sum with your Discount: {(prod.Quantity * prod.Price* (100 - Discount) / 100) / Currency.CurrencyDouble} {Currency.CurrencyName}");
         }
 
         Console.WriteLine($"Total price: {TotalPrice()}");
+        Console.WriteLine("Press any key to continue.");
     }
 
     public override double TotalPrice()

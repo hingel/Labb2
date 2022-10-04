@@ -9,8 +9,8 @@ namespace Labb2
 {
     internal class Store
     {
-        private List<Product> _storeProducts = new List<Product>();
-        private List<Customer> _customers = new List<Customer>();
+        private List<Product> _storeProducts = new(); //List<Product>();
+        private List<Customer> _customers = new(); // List<Customer>();
         private int _logedInCustomer = -1;
         
         public List<Product> StoreProducts

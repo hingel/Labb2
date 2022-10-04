@@ -23,10 +23,7 @@ public class Product
 
     public double Price
     {
-        get
-        {
-            return (_price / Currency.CurrencyDouble);
-        } 
+        get { return _price; } 
         set { _price = value; }
     }
 
@@ -44,6 +41,6 @@ public class Product
 
     public override string ToString()
     {
-        return $"\t Detail: {Detail}. \n\t Description: {Description} \n\t Quantity: {Quantity} Price: {Price} {Currency.CurrencyName}";
+        return $"\t Detail: {Detail}. \n\t Description: {Description} \n\t Quantity: {Quantity} Price: {Price / Currency.CurrencyDouble} {Currency.CurrencyName}";
     }
 }

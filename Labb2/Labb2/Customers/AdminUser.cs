@@ -8,10 +8,7 @@ namespace Labb2.Customers
 {
     internal class AdminUser : Customer
     {
-        public AdminUser(string name, string password) : base(name, password)
-        {
-
-        }
+        public AdminUser(string name, string password) : base(name, password) { }
 
         public Product AddNewProductToStore()
         {
