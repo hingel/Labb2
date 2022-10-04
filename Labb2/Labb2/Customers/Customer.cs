@@ -29,7 +29,7 @@ namespace Labb2
         public List<Product> ShoppingCart
         {
             get { return _shoppingCart; }
-            private set { _shoppingCart = value; } //Kan gå direkt om inget ändras.
+            private set { _shoppingCart = value; }
         }
 
         public bool CheckPassword(string input)

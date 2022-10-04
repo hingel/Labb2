@@ -60,8 +60,8 @@ namespace Labb2
             bool loopBreak = false;
             bool passwordCheck = false;
             bool customerFound = false;
-            string tempName = string.Empty;
-            string testPassword = string.Empty;
+            var tempName = string.Empty;
+            var testPassword = string.Empty;
 
             while (!loopBreak)
             {
@@ -122,8 +122,8 @@ namespace Labb2
         public void NewCustomer()
         {
             bool loopCheck = true;
-            string tempName = string.Empty;
-            string tempPassword = string.Empty;
+            var tempName = string.Empty;
+            var tempPassword = string.Empty;
             Console.Clear();
 
             do
@@ -139,12 +139,13 @@ namespace Labb2
                 {
                     break;
                 }
-
-                if (Customers.Count(c => c.Name.ToLower() == tempName.ToLower()) > 0) //Inte det snyggaste borde kunna få en bool direkt
+                
+                if (Customers.Count(c => c.Name.ToLower() == tempName.ToLower()) > 0 || tempName.ToLower() == "password") //Inte det snyggaste borde kunna få en bool direkt
                 {
                     Console.WriteLine($"{tempName} is not available. Enter a new Username:");
                     loopCheck = true;
                 }
+
             } while (loopCheck);
 
             if (tempName != "" && tempPassword != "")
@@ -227,7 +228,7 @@ namespace Labb2
         public void BuyProduct()
         {
             Console.Clear();
-            Console.WriteLine("What product to buy? Enter number to chose");
+            Console.WriteLine("What product to buy?");
             ListStoreProducts();
             int prodToAdd = Input.PublicInput(StoreProducts.Count);
             //Om antalet är mindre än ett i butiken

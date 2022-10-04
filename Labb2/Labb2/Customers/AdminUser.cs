@@ -18,8 +18,15 @@ namespace Labb2.Customers
             Console.WriteLine("Add new product to store.");
             Console.WriteLine("Enter detail name:");
             string newDetail = Console.ReadLine();
-            Console.WriteLine("Enter price for detail: (SEK)");
-            double newPrice = double.Parse(Console.ReadLine());
+
+            bool check = false;
+            double newPrice = 0;
+            while (!check)
+            {
+                Console.WriteLine("Enter price for detail: (SEK)");
+                check = double.TryParse(Console.ReadLine(), out newPrice);
+            }
+
             Console.WriteLine("Enter description:");
             string newDescription = Console.ReadLine();
             

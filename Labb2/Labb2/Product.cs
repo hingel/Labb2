@@ -15,8 +15,6 @@ public class Product
         _quantity = quantity;
     }
 
-    //public Product () {} //Tom konstruktor för json implementeringen för skapande av objekt
-
     public string Detail
     {
         get { return _detail; }
@@ -44,7 +42,6 @@ public class Product
         set { _quantity = value; }
     }
 
-    //Här nere borde priset kanske visas egentligen för varje grej. Men hur lösa det på ett bra sätt?
     public override string ToString()
     {
         return $"\t Detail: {Detail}. \n\t Description: {Description} \n\t Quantity: {Quantity} Price: {Price} {Currency.CurrencyName}";

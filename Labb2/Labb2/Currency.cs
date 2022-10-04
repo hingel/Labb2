@@ -1,10 +1,9 @@
-﻿
-namespace Labb2;
+﻿namespace Labb2;
 
 public static class Currency
 {
-    public static double CurrencyDouble { get; set; } = 1;
-    public static string CurrencyName { get; set; } = "SEK";
+    public static double CurrencyDouble { get; private set; } = 1;
+    public static string CurrencyName { get; private set; } = "SEK";
     public static void ChooseCurrency()
     {
         Console.WriteLine("1: SEK");

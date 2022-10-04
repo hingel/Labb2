@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Labb2
 {
@@ -44,7 +45,7 @@ namespace Labb2
             var list = new List<string>();
             try
             {
-                using (StreamReader sr = new StreamReader(fileName, true))
+                using (StreamReader sr = new StreamReader(fileName))
                 {
                     string line = string.Empty;
 
@@ -68,7 +69,7 @@ namespace Labb2
         {
             try
             {
-                using (StreamWriter sw = new StreamWriter(filename)) //, true))
+                using (StreamWriter sw = new StreamWriter(filename))
                 {
                     foreach (var l in list)
                     {
@@ -92,13 +93,13 @@ namespace Labb2
             foreach (var c in listToFix)
             {
                 var splitString = c.Split(' ');
-                //För att sortera ut användarnamnet
+                //För att sortera ut användarnamnet, ok att det innehåller mellanslag
                 string tempName = splitString.Skip(1)
                     .TakeWhile(str => !str.Contains("Password"))
                     .Aggregate((str, strSum) => $"{str} {strSum}");
-                //För att sortera ut lösenordet
+                //För att sortera ut lösenordet, ok att det innehåller mellanslag
                 string tempPassW = splitString.SkipWhile(str => !str.Contains("Password"))
-                    .Take(splitString.Length).Aggregate((str, strSum) => $"{str} {strSum}")
+                    .Take(splitString.Length).Aggregate((strsum, str) => $"{strsum} {str}")
                     .Substring(8);
 
                 if (splitString.Contains("gold"))
@@ -160,6 +161,36 @@ namespace Labb2
 
                 WriteToFile(addedCustomers, "customers.txt");
             }
+        }
+
+        public static void StoreProductsToJson(List<Product> productList)
+        {
+            var jSONList = new List<string>();
+
+            foreach (var prod in productList)
+            {
+                jSONList.Add(JsonSerializer.Serialize(prod));
+            }
+
+            WriteToFile(jSONList, "products.json");
+        }
+
+        public static List<Product> StoreProductsFromJson(string fileName)
+        {
+            var prodList = new List<Product>();
+
+            var jSonList = ReadListFromFile(fileName);
+
+            foreach (var str in jSonList)
+            {
+                Product prod = JsonSerializer.Deserialize<Product>(str);
+
+                prod.Quantity = 10; //för att detaljer inte ska försvinna om en användare inte checkar ut.
+
+                prodList.Add(prod);
+            }
+
+            return prodList;
         }
     }
 }

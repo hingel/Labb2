@@ -4,9 +4,7 @@ public class SilverCustomer : Customer
 {
     private int _discount = 10;
 
-    public SilverCustomer(string name, string password) : base(name, password)
-    { 
-    }
+    public SilverCustomer(string name, string password) : base(name, password) { }
 
     //public SilverCustomer(){}
 
