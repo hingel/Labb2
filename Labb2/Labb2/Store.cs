@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
-using System.Threading.Channels;
 using Labb2.Customers;
 
 namespace Labb2
@@ -12,7 +11,7 @@ namespace Labb2
     {
         private List<Product> _storeProducts = new List<Product>();
         private List<Customer> _customers = new List<Customer>();
-        private Customer? _logedInCustomer = null;
+        private int _logedInCustomer = -1;
         
         public List<Product> StoreProducts
         {
@@ -56,137 +55,6 @@ namespace Labb2
                 }
             } 
         }
-
-        public void ShoppingMenu()
-        {
-            bool quit = false;
-            
-            while (!quit)
-            {
-                Console.Clear();
-
-                Console.WriteLine($"Welcome {_logedInCustomer}");
-
-                Console.WriteLine();
-
-                Console.WriteLine("1. Buy Product:");
-                Console.WriteLine("2. Remove Product from Shopping Cart:");
-                Console.WriteLine("3. List Shopping Cart");
-                Console.WriteLine("4. Check out");
-                Console.WriteLine("5. Log Out");
-
-                int noOfChoices = 5;
-                
-                //Här ha villkor om admin user:
-                if (_logedInCustomer is AdminUser)
-                {
-                    Console.WriteLine("6. Admin Menu.");
-                    noOfChoices = 6;
-                }
-
-                int choise = Input.PublicInput(noOfChoices);
-
-                switch (choise)
-                {
-                    case 1: //Köpa produkt
-                        Console.Clear();
-                        Console.WriteLine("What product to buy? Enter number to chose");
-                        ListStoreProducts();
-                        int prodToAdd = Input.PublicInput(StoreProducts.Count);
-                        //Om antalet är mindre än ett i butiken
-                        if (StoreProducts[prodToAdd - 1].Quantity < 1)
-                        {
-                            Console.WriteLine($"{StoreProducts[prodToAdd - 1].Detail} is not available. Press any key to continue.");
-                            Console.ReadKey();
-                        }
-                        else
-                        {
-                            _logedInCustomer.AddProductToCart(StoreProducts[prodToAdd - 1]);
-                            StoreProducts[prodToAdd - 1].Quantity -= 1;
-                        }
-                        break;
-                    case 2: //Ta bort produkt
-                        Console.Clear();
-                        Console.WriteLine("What product to remove?");
-                        Product tempProd = _logedInCustomer.RemoveProductFromCart();
-
-                        //Lägger tillbaks produkten i kassan
-                        if (tempProd != null)
-                        {
-                            StoreProducts.Single(p => p.Detail == tempProd.Detail).Quantity++;
-                        }
-                        break;
-                    case 3://Lista shopping cart
-                        Console.Clear();
-                        Console.WriteLine("Shopping Cart");
-                        _logedInCustomer.ListShoppingCart();
-                        Console.ReadLine();
-                        break;
-                    case 4: //checka ut och betala
-                        Console.Clear();
-                        Console.WriteLine("Shopping Cart");
-                        _logedInCustomer.CheckOut();
-                        Console.ReadLine();
-                        break;
-                    case 5: //Logout
-                        Console.WriteLine("log out");
-                        LogOut();
-                        quit = true;
-                        break;
-                    case 6:
-                        if (_logedInCustomer is AdminUser admin)
-                        {
-                            StoreProducts.Add(admin.AddNewProductToCart());
-                        }
-                        break;
-                }
-            }
-        }
-        
-        public void NewCustomer()
-        {
-            bool loopCheck = true;
-            string tempName = string.Empty;
-            string tempPassword = string.Empty;
-            Console.Clear();
-
-            do
-            {
-                Console.WriteLine("Enter Username:");
-                loopCheck = false;
-                tempName = Console.ReadLine();
-
-                Console.WriteLine("Enter a password:");
-                tempPassword = Console.ReadLine();
-
-                if (tempName == "" || tempPassword == "")
-                {
-                    Console.WriteLine("Input cannot be blank.");
-                    loopCheck = true;
-                }
-
-                if (Customers.Count(c => c.Name.ToLower() == tempName.ToLower()) > 0) //Inte det snyggaste borde kunna få en bool direkt
-                {
-                    Console.WriteLine($"{tempName} is not available. Enter a new Username:");
-                    loopCheck = true;
-                }
-            } while (loopCheck);
-
-            var customer1 = new Customer(name: tempName, password: tempPassword);
-            Customers.Add(customer1);
-            _logedInCustomer = customer1;
-            ShoppingMenu();
-        }
-
-        public void ListStoreProducts()
-        {
-            for (int i = 0; i < StoreProducts.Count; i++)
-            {
-                Console.WriteLine($"{i+1}. {StoreProducts[i].ToString()} {Currency.CurrencyName}");
-            }
-        }
-
-        //Byter aktiv användare i listan
         public void LogIn()
         {
             bool loopBreak = false;
@@ -194,7 +62,7 @@ namespace Labb2
             bool customerFound = false;
             string tempName = string.Empty;
             string testPassword = string.Empty;
-            
+
             while (!loopBreak)
             {
                 Console.WriteLine("Enter Username or press Enter to quit.:");
@@ -206,17 +74,16 @@ namespace Labb2
                 {
                     break;
                 }
-               
-                Customer tempCust = Customers.FirstOrDefault(cust => cust.Name.ToLower() == tempName.ToLower());
 
-                if (tempCust != null)
+                _logedInCustomer = Customers.FindIndex(cust => cust.Name.ToLower() == tempName.ToLower());
+
+                if (_logedInCustomer >= 0)
                 {
                     customerFound = true;
-                    passwordCheck = tempCust.CheckPassword(testPassword);
+                    passwordCheck = Customers[_logedInCustomer].CheckPassword(testPassword);
 
                     if (passwordCheck)
                     {
-                        _logedInCustomer = tempCust;
                         loopBreak = true;
                     }
                     else
@@ -240,8 +107,10 @@ namespace Labb2
                         break;
                     }
                     else
+                    {
                         break;
-                } 
+                    }
+                }
             }
 
             if (passwordCheck)
@@ -250,11 +119,141 @@ namespace Labb2
                 ShoppingMenu();
             }
         }
+        public void NewCustomer()
+        {
+            bool loopCheck = true;
+            string tempName = string.Empty;
+            string tempPassword = string.Empty;
+            Console.Clear();
+
+            do
+            {
+                Console.WriteLine("Enter Username or press Enter to quit:");
+                loopCheck = false;
+                tempName = Console.ReadLine();
+
+                Console.WriteLine("Enter a password or press Enter to quit:");
+                tempPassword = Console.ReadLine();
+
+                if (tempName == "" || tempPassword == "")
+                {
+                    break;
+                }
+
+                if (Customers.Count(c => c.Name.ToLower() == tempName.ToLower()) > 0) //Inte det snyggaste borde kunna få en bool direkt
+                {
+                    Console.WriteLine($"{tempName} is not available. Enter a new Username:");
+                    loopCheck = true;
+                }
+            } while (loopCheck);
+
+            if (tempName != "" && tempPassword != "")
+            {
+                var customerNew = new Customer(name: tempName, password: tempPassword);
+                Customers.Add(customerNew);
+                _logedInCustomer = Customers.Count - 1;
+                ShoppingMenu();
+            }
+        }
+        public void ShoppingMenu()
+        {
+            bool quit = false;
+            
+            while (!quit)
+            {
+                Console.Clear();
+                Console.WriteLine($"Welcome {Customers[_logedInCustomer]}");
+
+                Console.WriteLine();
+
+                Console.WriteLine("1. Buy Product:");
+                Console.WriteLine("2. Remove Product from Shopping Cart:");
+                Console.WriteLine("3. List Shopping Cart");
+                Console.WriteLine("4. Check out");
+                Console.WriteLine("5. Log Out");
+
+                int noOfChoices = 5;
+                
+                //Här ha villkor om admin user:
+                if (Customers[_logedInCustomer] is AdminUser)
+                {
+                    Console.WriteLine("6. Admin Menu: Add product to store.");
+                    noOfChoices = 6;
+                }
+
+                int choise = Input.PublicInput(noOfChoices);
+
+                switch (choise)
+                {
+                    case 1: //Köpa produkt
+                        BuyProduct();
+                        break;
+                    case 2: //Ta bort produkt
+                        Console.Clear();
+                        Console.WriteLine("What product to remove?");
+                        Product tempProd = Customers[_logedInCustomer].RemoveProductFromCart();
+                        //Lägger tillbaks produkten i kassan
+                        if (tempProd != null)
+                        {
+                            StoreProducts.Single(p => p.Detail == tempProd.Detail).Quantity++;
+                        }
+                        break;
+                    case 3://Lista shopping cart
+                        Console.Clear();
+                        Console.WriteLine("Shopping Cart");
+                        Customers[_logedInCustomer].ListShoppingCart();
+                        Console.ReadKey();
+                        break;
+                    case 4: //checka ut och betala
+                        Console.Clear();
+                        Console.WriteLine("Shopping Cart");
+                        Customers[_logedInCustomer].CheckOut();
+                        break;
+                    case 5: //Logout
+                        Console.WriteLine("log out");
+                        LogOut();
+                        quit = true;
+                        break;
+                    case 6:
+                        if (Customers[_logedInCustomer] is AdminUser admin)
+                        {
+                            StoreProducts.Add(admin.AddNewProductToStore());
+                        }
+                        break;
+                }
+            }
+        }
+
+        public void BuyProduct()
+        {
+            Console.Clear();
+            Console.WriteLine("What product to buy? Enter number to chose");
+            ListStoreProducts();
+            int prodToAdd = Input.PublicInput(StoreProducts.Count);
+            //Om antalet är mindre än ett i butiken
+            if (StoreProducts[prodToAdd - 1].Quantity < 1)
+            {
+                Console.WriteLine($"{StoreProducts[prodToAdd - 1].Detail} is not available. Press any key to continue.");
+                Console.ReadKey();
+            }
+            else
+            {
+                Customers[_logedInCustomer].AddProductToCart(StoreProducts[prodToAdd - 1]);
+                StoreProducts[prodToAdd - 1].Quantity -= 1;
+            }
+        }
+        
+        public void ListStoreProducts()
+        {
+            for (int i = 0; i < StoreProducts.Count; i++)
+            {
+                Console.WriteLine($"{i+1}. {StoreProducts[i].ToString()}");
+            }
+        }
 
         public void LogOut()
         {
-            _logedInCustomer = null;  
+            _logedInCustomer = -1;  
         }
-
     }
 }

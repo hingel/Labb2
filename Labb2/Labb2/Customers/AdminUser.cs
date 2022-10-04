@@ -13,7 +13,7 @@ namespace Labb2.Customers
 
         }
 
-        public Product AddNewProductToCart()
+        public Product AddNewProductToStore()
         {
             Console.WriteLine("Add new product to store.");
             Console.WriteLine("Enter detail name:");

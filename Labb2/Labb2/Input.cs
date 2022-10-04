@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Labb2.Customers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,7 +15,7 @@ namespace Labb2
         {
             int choise = 0;
             bool loopCheck = false;
-            Console.WriteLine($"Enter number between 1 - {maxInput}");
+            Console.WriteLine($"Enter number between 1 - {maxInput} and press Enter.");
 
             while (!loopCheck)
             {
@@ -67,7 +68,7 @@ namespace Labb2
         {
             try
             {
-                using (StreamWriter sw = new StreamWriter(filename))
+                using (StreamWriter sw = new StreamWriter(filename)) //, true))
                 {
                     foreach (var l in list)
                     {
@@ -81,6 +82,83 @@ namespace Labb2
             {
                 Console.WriteLine(e);
                 throw;
+            }
+        }
+
+        public static List<Customer> FixReadList(List<string> listToFix)
+        {
+            var custListFixed = new List<Customer>();
+
+            foreach (var c in listToFix)
+            {
+                var splitString = c.Split(' ');
+                //För att sortera ut användarnamnet
+                string tempName = splitString.Skip(1)
+                    .TakeWhile(str => !str.Contains("Password"))
+                    .Aggregate((str, strSum) => $"{str} {strSum}");
+                //För att sortera ut lösenordet
+                string tempPassW = splitString.SkipWhile(str => !str.Contains("Password"))
+                    .Take(splitString.Length).Aggregate((str, strSum) => $"{str} {strSum}")
+                    .Substring(8);
+
+                if (splitString.Contains("gold"))
+                {
+                    custListFixed.Add(new GoldCustomer(tempName, tempPassW));
+                }
+                else if (splitString.Contains("silver"))
+                {
+                    custListFixed.Add(new SilverCustomer(tempName, tempPassW));
+                }
+                else if (splitString.Contains("bronze"))
+                {
+                    custListFixed.Add(new BronzeCustomer(tempName, tempPassW));
+                }
+                else if (splitString.Contains("admin"))
+                {
+                    custListFixed.Add(new AdminUser(tempName, tempPassW));
+                }
+                else
+                {
+                    custListFixed.Add(new Customer(tempName, tempPassW));
+                }
+            }
+
+            return custListFixed;
+        }
+
+        public static void FixWriteList(List<Customer> custList, List<string> customerList)
+        {
+            var addedCustomers = new List<string>();
+
+            foreach (var cust in custList)
+            {
+                bool add = customerList.Contains(cust.Name); //om användaren redan finns ska den inte läggas till
+
+                if (!add)
+                {
+                    if (cust is GoldCustomer)
+                    {
+                        addedCustomers.Add($"gold {cust.GenerateFileString()}");
+                    }
+                    else if (cust is SilverCustomer)
+                    {
+                        addedCustomers.Add($"silver {cust.GenerateFileString()}");
+                    }
+                    else if (cust is BronzeCustomer)
+                    {
+                        addedCustomers.Add($"bronze {cust.GenerateFileString()}");
+                    }
+                    else if (cust is AdminUser)
+                    {
+                        addedCustomers.Add($"admin {cust.GenerateFileString()}");
+                    }
+                    else
+                    {
+                        addedCustomers.Add($"standard {cust.GenerateFileString()}");
+                    }
+                }
+
+                WriteToFile(addedCustomers, "customers.txt");
             }
         }
     }

@@ -7,7 +7,7 @@ public class Product
     private string _description;
     private int _quantity;
 
-    public Product (string detail, double price, string description = "", int quantity = 3)
+    public Product (string detail, double price, string description = "", int quantity = 5)
     {
         _detail = detail;
         _price = price;
@@ -47,6 +47,6 @@ public class Product
     //Här nere borde priset kanske visas egentligen för varje grej. Men hur lösa det på ett bra sätt?
     public override string ToString()
     {
-        return $"Detail: {Detail}. Description: {Description} Quantity: {Quantity} Price: {Price}";
+        return $"\t Detail: {Detail}. \n\t Description: {Description} \n\t Quantity: {Quantity} Price: {Price} {Currency.CurrencyName}";
     }
 }

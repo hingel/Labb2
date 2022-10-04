@@ -13,7 +13,7 @@ namespace Labb2
  
         private List<Product> _shoppingCart = new List<Product>();
         
-        public Customer(string name = "", string password = "")
+        public Customer(string name = "hej", string password = "111")
         {
             _name = name;
             _password = password;
@@ -63,10 +63,11 @@ namespace Labb2
             foreach (var prod in _shoppingCart)
             {
                 count++;
-                Console.WriteLine($"{count}. {prod}" + $"Total sum: {prod.Quantity*prod.Price}");   
+                Console.WriteLine($"{count}. {prod} " + $"Total sum: {prod.Quantity*prod.Price}");   
             }
 
             Console.WriteLine($"Total price: {TotalPrice()} {Currency.CurrencyName}");
+            Console.WriteLine("Press any key to continue.");
         }
 
         public void AddProductToCart(Product productToAdd)
@@ -121,13 +122,13 @@ namespace Labb2
         public void CheckOut()
         {
             ShoppingCart.Clear();
-            Console.WriteLine("Your shopping cart is empty.Press any key to continue");
-            Console.ReadLine();
+            Console.WriteLine("You pay, your shopping cart is empty. Press any key to continue");
+            Console.ReadKey();
         }
         
         public string GenerateFileString()
         {
-            return $"{Name} Password{_password}";
+            return $"{Name} Password{_password}"; 
         }
 
         public override string ToString()

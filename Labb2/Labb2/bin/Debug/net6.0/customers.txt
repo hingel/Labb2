@@ -8,3 +8,4 @@ gold Alfons PasswordÅberg
 standard sveb Passwordsveb
 standard Stefan Passwordgoodbye
 admin admin Password_admin
+standard Henrik I Passwordhej på dig

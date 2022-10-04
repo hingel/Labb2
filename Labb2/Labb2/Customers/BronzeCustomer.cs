@@ -21,7 +21,7 @@ public class BronzeCustomer : Customer
         foreach (var prod in ShoppingCart)
         {
             count++;
-            Console.WriteLine($"{count}. {prod}. \nTotal sum with your Discount: {prod.Quantity * prod.Price* (100 - Discount) / 100} {Currency.CurrencyName}");
+            Console.WriteLine($"{count}. {prod}. \n\t Total sum with your Discount: {prod.Quantity * prod.Price* (100 - Discount) / 100} {Currency.CurrencyName}");
         }
 
         Console.WriteLine($"Total price: {TotalPrice()}");
@@ -40,6 +40,6 @@ public class BronzeCustomer : Customer
     }
     public override string ToString()
     {
-        return base.ToString() + string.Format(TotalPrice() > 0 ? $" With your {Discount}'%' Discount!" : "");
+        return base.ToString() + (TotalPrice() > 0 ? $" With your {Discount}'%' Discount!" : "");
     }
 }
