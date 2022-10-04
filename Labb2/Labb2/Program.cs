@@ -1,5 +1,4 @@
 ﻿using Labb2;
-using Labb2.Customers;
 
 var store = new Store();
 
