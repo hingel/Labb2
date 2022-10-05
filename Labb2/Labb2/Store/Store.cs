@@ -31,6 +31,9 @@ namespace Labb2
 
             while (!quit)
             {
+                Console.Clear();
+                Console.WriteLine("Welcome to The Simple Shop:");
+                Console.WriteLine();
                 Console.WriteLine("1. Login:");
                 Console.WriteLine("2. New Customer:");
                 Console.WriteLine("3. Choose Currency:");
@@ -99,7 +102,7 @@ namespace Labb2
 
                 if (!customerFound)
                 {
-                    Console.WriteLine("User does not exist. Press: \n 1. to create new Customer. \n 2. or Enter to quit.");
+                    Console.WriteLine("Press: \n 1. to create new Customer. \n 2. or Enter to quit.");
 
                     if (Console.ReadLine() == "1")
                     {
@@ -164,9 +167,7 @@ namespace Labb2
             {
                 Console.Clear();
                 Console.WriteLine($"Welcome {Customers[_logedInCustomer]}");
-
                 Console.WriteLine();
-
                 Console.WriteLine("1. Buy Product:");
                 Console.WriteLine("2. Remove Product from Shopping Cart:");
                 Console.WriteLine("3. List Shopping Cart");

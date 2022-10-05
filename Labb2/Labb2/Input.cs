@@ -184,7 +184,7 @@ namespace Labb2
             {
                 Product prod = JsonSerializer.Deserialize<Product>(str);
 
-                prod.Quantity = 10; //för att detaljer inte ska försvinna om en användare inte checkar ut.
+                //prod.Quantity = 10; //för att detaljer inte ska försvinna om en användare inte checkar ut.
 
                 prodList.Add(prod);
             }

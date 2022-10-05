@@ -7,3 +7,4 @@ gold Alfons PasswordÅberg
 standard Stefan Passwordgoodbye
 admin admin Password_admin
 standard Henrik i Passwordhej på dig
+standard Chrischros Password123
