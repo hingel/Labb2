@@ -48,6 +48,7 @@ namespace Labb2
                 {
                     string line = string.Empty;
 
+
                     while ((line = sr.ReadLine()) != null)
                     {
                         if (line.Length > 0)
