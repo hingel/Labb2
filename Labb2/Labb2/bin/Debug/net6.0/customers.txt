@@ -1,10 +1,5 @@
 standard Knatte Password123
 gold Fnatte Password321
 silver Tjatte Password213
-silver chris Passwordhejpådig
-standard love PasswordLiv
-gold Alfons PasswordÅberg
-standard Stefan Passwordgoodbye
 admin admin Password_admin
-standard Henrik i Passwordhej på dig
-standard Chrischros Password123
+bronze Henrik i Passwordhej på dig

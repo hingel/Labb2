@@ -38,6 +38,6 @@ public class BronzeCustomer : Customer
     }
     public override string ToString()
     {
-        return base.ToString() + (TotalPrice() > 0 ? $" With your {Discount}'%' Discount!" : "");
+        return base.ToString() + (TotalPrice() > 0 ? $" With your {Discount}% Discount!" : "");
     }
 }

@@ -9,8 +9,8 @@ namespace Labb2
 {
     internal class Store
     {
-        private List<Product> _storeProducts = new(); //List<Product>();
-        private List<Customer> _customers = new(); // List<Customer>();
+        private List<Product> _storeProducts = new();
+        private List<Customer> _customers = new();
         private int _logedInCustomer = -1;
         
         public List<Product> StoreProducts
@@ -230,6 +230,7 @@ namespace Labb2
         {
             Console.Clear();
             Console.WriteLine("What product to buy?");
+            Console.WriteLine();
             ListStoreProducts();
             int prodToAdd = Input.PublicInput(StoreProducts.Count);
             //Om antalet är mindre än ett i butiken

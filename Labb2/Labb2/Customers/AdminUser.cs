@@ -31,9 +31,5 @@ namespace Labb2.Customers
 
             return newAddedProduct;
         }
-
-        //Bygg ut med funktioner för att ta bort detaljer ur listan.
-
     }
-
 }

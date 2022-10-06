@@ -25,6 +25,10 @@ if (File.Exists("customers.txt"))
     customerList = Input.ReadListFromFile("customers.txt");
     store.Customers = Input.FixReadList(customerList);
 }
+else
+{
+    Console.WriteLine("Customers.txt do not exist.");
+}
 
 //kör inloggningsmenyn
 store.LogInMenu();
