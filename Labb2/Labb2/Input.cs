@@ -50,7 +50,10 @@ namespace Labb2
 
                     while ((line = sr.ReadLine()) != null)
                     {
-                        list.Add(line);
+                        if (line.Length > 0)
+                        {
+                            list.Add(line);
+                        }
                     }
                     sr.Close();
                 }
