@@ -48,7 +48,6 @@ namespace Labb2
                 {
                     string line = string.Empty;
 
-
                     while ((line = sr.ReadLine()) != null)
                     {
                         if (line.Length > 0)
@@ -56,7 +55,6 @@ namespace Labb2
                             list.Add(line);
                         }
                     }
-                    sr.Close();
                 }
             }
             catch (Exception e)
@@ -78,8 +76,6 @@ namespace Labb2
                     {
                         sw.WriteLine(l);
                     }
-
-                    sw.Close();
                 }
             }
             catch (Exception e)
